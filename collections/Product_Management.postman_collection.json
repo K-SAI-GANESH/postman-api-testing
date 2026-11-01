@@ -1,0 +1,516 @@
+{
+  "info": {
+    "_postman_id": "4cd4eabf-9471-4c5f-ba78-3f10d28181c1",
+    "name": "Product_Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50000643",
+    "_collection_link": "https://go.postman.co/collection/50000643-4cd4eabf-9471-4c5f-ba78-3f10d28181c1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Negative Testing Product search",
+      "item": [
+        {
+          "name": "Get Product Search Laptop",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Search results should be an array\", () => {\r\n    pm.expect(response_body.products).to.be.an(\"array\");\r\n});\r\n\r\n// Validate results are available\r\npm.test(\"Search should return matching products\", () => {\r\n    pm.expect(response_body.products.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Verify the mandateory fields \", () => {\r\n   response_body.products.forEach(product=>{\r\n\r\n    pm.expect(product.id).to.be.a(\"number\");\r\n    pm.expect(product.title).to.be.a(\"string\");\r\n    pm.expect(product.description).to.be.a(\"string\");\r\n    pm.expect(product.category).to.be.a(\"string\");\r\n    pm.expect(product.price).to.be.a(\"number\");\r\n    pm.expect(product.discountPercentage).to.be.a(\"number\");\r\n    pm.expect(product.rating).to.be.a(\"number\");\r\n    pm.expect(product.stock).to.be.a(\"number\");\r\n\r\n\r\n\r\n\r\n   })\r\n\r\n\r\n});\r\n\r\npm.test(\"Verify the check if search is proper  \", () => {\r\n  var matchingProducts =response_body.products.filter(product=>\r\n   \r\n       product.title.toLowerCase().includes(\"laptop\"));\r\n\r\n    \r\n     pm.expect(matchingProducts.length).to.be.above(0);\r\n\r\n\r\n\r\n\r\n   });\r\n\r\n   \r\n\r\n\r\n\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/products/search?q=laptop",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "laptop"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Search Invalid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Search results should be an array\", () => {\r\n    pm.expect(response_body.products).to.be.an(\"array\");\r\n});\r\n\r\n// Validate results are available\r\npm.test(\"Search should return matching products\", () => {\r\n    pm.expect(response_body.products.length).to.be.eq(0);\r\n});\r\n\r\npm.test(\"Verify the mandateory fields \", () => {\r\n   response_body.products.forEach(product=>{\r\n\r\n    pm.expect(product.id).to.be.a(\"number\");\r\n    pm.expect(product.title).to.be.a(\"string\");\r\n    pm.expect(product.description).to.be.a(\"string\");\r\n    pm.expect(product.category).to.be.a(\"string\");\r\n    pm.expect(product.price).to.be.a(\"number\");\r\n    pm.expect(product.discountPercentage).to.be.a(\"number\");\r\n    pm.expect(product.rating).to.be.a(\"number\");\r\n    pm.expect(product.stock).to.be.a(\"number\");\r\n\r\n\r\n\r\n\r\n   })\r\n\r\n\r\n});\r\n\r\n\r\n   \r\n\r\n\r\n\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/products/search?q=123XYZ",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "123XYZ"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Search Empty",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Search results should be an array\", () => {\r\n    pm.expect(response_body.products).to.be.an(\"array\");\r\n});\r\n\r\n// Validate results are available\r\npm.test(\"Search should return matching products\", () => {\r\n    pm.expect(response_body.products.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Verify the mandateory fields \", () => {\r\n   response_body.products.forEach(product=>{\r\n\r\n    pm.expect(product.id).to.be.a(\"number\");\r\n    pm.expect(product.title).to.be.a(\"string\");\r\n    pm.expect(product.description).to.be.a(\"string\");\r\n    pm.expect(product.category).to.be.a(\"string\");\r\n    pm.expect(product.price).to.be.a(\"number\");\r\n    pm.expect(product.discountPercentage).to.be.a(\"number\");\r\n    pm.expect(product.rating).to.be.a(\"number\");\r\n    pm.expect(product.stock).to.be.a(\"number\");\r\n\r\n\r\n\r\n\r\n   })\r\n\r\n\r\n});\r\n\r\npm.test(\"Verify the check if search is proper  \", () => {\r\n  var matchingProducts =response_body.products.filter(product=>\r\n   \r\n       product.title.toLowerCase().includes(\"laptop\"));\r\n\r\n    \r\n     pm.expect(matchingProducts.length).to.be.above(0);\r\n\r\n\r\n\r\n\r\n   });\r\n\r\n   \r\n\r\n\r\n\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/products/search?q=laptop",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "laptop"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Get All Products",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Verify the default limit\", ()=>{\r\npm.expect(response_body.limit).to.be.eq(30);\r\n});\r\n\r\npm.test(\"Every product should contain mandatory fields\", () => {\r\n    response_body.products.forEach(user=>{\r\n\r\n        pm.expect(user.id).to.be.a(\"number\");\r\n        pm.expect(user.title).to.be.a(\"string\");\r\n        pm.expect(user.description).to.be.a(\"string\");\r\n        pm.expect(user.category).to.be.a(\"string\");\r\n        pm.expect(user.price).to.be.a(\"number\");\r\n        pm.expect(user.discountPercentage).to.be.a(\"number\");   \r\n        pm.expect(user.rating).to.be.a(\"number\");\r\n    });\r\n\r\n});\r\n\r\npm.test(\"Verify each product has unique id\", ()=>{\r\nconst ids = response_body.products.map(p => p.id);\r\npm.expect(new Set(ids).size).to.eql(ids.length);\r\n\r\n\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Products with limit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Verify the default limit\", ()=>{\r\npm.expect(response_body.limit).to.be.eq(10);\r\n});\r\n\r\npm.test(\"Every product should contain mandatory fields\", () => {\r\n    response_body.products.forEach(user=>{\r\n\r\n        pm.expect(user.id).to.be.a(\"number\");\r\n        pm.expect(user.title).to.be.a(\"string\");\r\n        pm.expect(user.description).to.be.a(\"string\");\r\n        pm.expect(user.category).to.be.a(\"string\");\r\n        pm.expect(user.price).to.be.a(\"number\");\r\n        pm.expect(user.discountPercentage).to.be.a(\"number\");   \r\n        pm.expect(user.rating).to.be.a(\"number\");\r\n    });\r\n\r\n});\r\n\r\npm.test(\"Verify each product has unique id\", ()=>{\r\nconst ids = response_body.products.map(p => p.id);\r\npm.expect(new Set(ids).size).to.eql(ids.length);\r\n\r\n\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products?limit=10",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Product By ID.",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Verify the product id\", () => {\r\n    pm.expect(response_body.id).to.equal(1);\r\n    pm.expect(response_body.id).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Verify the product title\", () => {  \r\n    pm.expect(response_body.title).to.be.a(\"string\");\r\n    pm.expect(response_body.title.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Verify the product price\", () => {\r\n    pm.expect(response_body.price).to.be.a(\"number\");\r\n    pm.expect(response_body.price).to.be.greaterThan(0);\r\n}\r\n);\r\n\r\npm.test(\"Verify the product rating\", () => {\r\n    pm.expect(response_body.rating).to.be.a(\"number\");\r\n    pm.expect(response_body.rating).to.be.within(0,5);\r\n}\r\n);\r\n\r\n\r\npm.test(\"Product stock should be non-negative\", () => {\r\n    pm.expect(response_body.stock).to.be.a(\"number\");\r\n    pm.expect(response_body.stock).to.be.at.least(0);\r\n});\r\n\r\n\r\npm.environment.set(\"product_id\", response_body.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products/1",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Product Search",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Search results should be an array\", () => {\r\n    pm.expect(response_body.products).to.be.an(\"array\");\r\n});\r\n\r\n// Validate results are available\r\npm.test(\"Search should return matching products\", () => {\r\n    pm.expect(response_body.products.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Verify the mandateory fields \", () => {\r\n   response_body.products.forEach(product=>{\r\n\r\n    pm.expect(product.id).to.be.a(\"number\");\r\n    pm.expect(product.title).to.be.a(\"string\");\r\n    pm.expect(product.description).to.be.a(\"string\");\r\n    pm.expect(product.category).to.be.a(\"string\");\r\n    pm.expect(product.price).to.be.a(\"number\");\r\n    pm.expect(product.discountPercentage).to.be.a(\"number\");\r\n    pm.expect(product.rating).to.be.a(\"number\");\r\n    pm.expect(product.stock).to.be.a(\"number\");\r\n\r\n\r\n\r\n\r\n   })\r\n\r\n\r\n});\r\n\r\npm.test(\"Verify the check if search is proper  \", () => {\r\n  var matchingProducts =response_body.products.filter(product=>\r\n   \r\n       product.title.toLowerCase().includes(\"phone\"));\r\n\r\n    \r\n     pm.expect(matchingProducts.length).to.be.above(0);\r\n\r\n\r\n\r\n\r\n   });\r\n\r\n   \r\n\r\n\r\n\r\n\r\n\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products/search?q=phone",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "phone"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Product Categories",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\n\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Categories should be an array\", () => {\r\n    pm.expect(response).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Categories should not be empty\", () => {\r\n    pm.expect(response.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Every category should contain a name and URL\", () => {\r\n    response.forEach(category => {\r\n        pm.expect(category.name).to.be.a(\"string\");\r\n        pm.expect(category.slug).to.be.a(\"string\");\r\n        pm.expect(category.url).to.be.a(\"string\");\r\n    });\r\n});\r\n\r\npm.test(\"Category slugs should be unique\", () => {\r\n    const slugs = response.map(category => category.slug);\r\n    pm.expect(new Set(slugs).size).to.eql(slugs.length);\r\n});\r\n\r\n\r\n\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products/categories",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products",
+            "categories"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sort Products by Price (Ascending)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\nconst products = response.products;\r\n\r\npm.test(\"Products should be returned\", () => {\r\n    pm.expect(products).to.be.an(\"array\");\r\n    pm.expect(products.length).to.be.above(1);\r\n});\r\n\r\npm.test(\"Every product should have a valid price\", () => {\r\n    products.forEach(product => {\r\n        pm.expect(product.price).to.be.a(\"number\");\r\n        pm.expect(product.price).to.be.above(0);\r\n    });\r\n});\r\n\r\npm.test(\"Products should be sorted by ascending price\", () => {\r\n    for (let i = 1; i < products.length; i++) {\r\n        pm.expect(products[i].price).to.be.greaterThanOrEqual(products[i - 1].price);\r\n    }\r\n});\r\n\r\npm.test(\"Pagination metadata should be available\", () => {\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n    pm.expect(response.limit).to.be.a(\"number\");\r\n    pm.expect(response.skip).to.be.a(\"number\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products?sortBy=price&order=asc",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products"
+          ],
+          "query": [
+            {
+              "key": "sortBy",
+              "value": "price"
+            },
+            {
+              "key": "order",
+              "value": "asc"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sort Products by Price (Desceding)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Filter API should return 200\", () => {\n    pm.response.to.have.status(200);\n});\n\nconst response = pm.response.json();\n\npm.test(\"Filtered products should be an array\", () => {\n    pm.expect(response.products).to.be.an(\"array\");\n});\n\npm.test(\"Filtered products should not be empty\", () => {\n    pm.expect(response.products.length).to.be.above(0);\n});\n\npm.test(\"All products should are in proper order\", () => {\n   \n   for(let i = 0; i < response.products.length - 1; i++) {\n       pm.expect(response.products[i].price).to.be.at.least(response.products[i + 1].price);\n   }\n});\n\npm.test(\"Pagination metadata should be available\", () => {\n    pm.expect(response.total).to.be.a(\"number\");\n    pm.expect(response.limit).to.be.a(\"number\");\n    pm.expect(response.skip).to.be.a(\"number\");\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products?sortBy=price&order=desc",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products"
+          ],
+          "query": [
+            {
+              "key": "sortBy",
+              "value": "price"
+            },
+            {
+              "key": "order",
+              "value": "desc"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Product By ID - Invalid ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 404\", ()=>{\n    pm.response.to.have.status(404);\n});\n\npm.test(\"Verify the response time\", ()=>{\n    pm.expect(pm.response.responseTime).to.be.below(2000);\n});\n\nvar response_body = pm.response.json();\n\npm.test(\"Verify the error message\", () => {\n    pm.expect(response_body.message).to.match(/^Product with id '\\d+' not found$/);\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products/9999999999",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products",
+            "9999999999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Filter Products By Category",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Search results should be an array\", () => {\r\n    pm.expect(response_body.products).to.be.an(\"array\");\r\n});\r\n\r\n// Validate results are available\r\npm.test(\"Search should return matching products\", () => {\r\n    pm.expect(response_body.products.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Verify the mandateory fields \", () => {\r\n   response_body.products.forEach(product=>{\r\n\r\n    pm.expect(product.id).to.be.a(\"number\");\r\n    pm.expect(product.title).to.be.a(\"string\");\r\n    pm.expect(product.description).to.be.a(\"string\");\r\n    pm.expect(product.category).to.be.a(\"string\");\r\n    pm.expect(product.price).to.be.a(\"number\");\r\n    pm.expect(product.discountPercentage).to.be.a(\"number\");\r\n    pm.expect(product.rating).to.be.a(\"number\");\r\n    pm.expect(product.stock).to.be.a(\"number\");\r\n\r\n\r\n\r\n\r\n   })\r\n\r\n\r\n});\r\n\r\npm.test(\"Verify the check if search is proper  \", () => {\r\n  response_body.products.forEach(product=>{\r\n\r\n    pm.expect(product.category).to.be.eq(\"smartphones\");\r\n  })\r\n\r\n\r\n\r\n\r\n   });\r\n\r\n   \r\n\r\n\r\n\r\n\r\n\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products/category/smartphones",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products",
+            "category",
+            "smartphones"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add a New Product",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200 or 201\", () => {\r\n    pm.expect([200, 201]).to.include(pm.response.code);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Product ID should be generated\", () => {\r\n    pm.expect(response.id).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Product title should match request\", () => {\r\n    pm.expect(response.title).to.eql(\"QA Automation Laptop\");\r\n});\r\n\r\npm.test(\"Product price should match request\", () => {\r\n    pm.expect(response.price).to.eql(1299.99);\r\n});\r\n\r\npm.test(\"Product category should match request\", () => {\r\n    pm.expect(response.category).to.eql(\"laptops\");\r\n});\r\n\r\npm.test(\"Product stock should match request\", () => {\r\n    pm.expect(response.stock).to.eql(25);\r\n});\r\n\r\npm.test(\"Response should contain a valid product ID\", () => {\r\n    pm.expect(response.id).to.be.above(0);\r\n});\r\n\r\n// Save generated ID for later requests\r\npm.environment.set(\"created_product_id\", response.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\": \"QA Automation Laptop\",\r\n    \"description\": \"Laptop created for API automation testing\",\r\n    \"category\": \"laptops\",\r\n    \"price\": 1299.99,\r\n    \"stock\": 25,\r\n    \"brand\": \"QA Tech\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products/add",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products",
+            "add"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Product",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Product ID should remain unchanged\", () => {\r\n    pm.expect(response.id).to.eql(1);\r\n});\r\n\r\npm.test(\"Product title should be updated\", () => {\r\n    pm.expect(response.title).to.eql(\"Updated QA Automation Laptop\");\r\n});\r\n\r\npm.test(\"Product price should be updated\", () => {\r\n    pm.expect(response.price).to.eql(1499.99);\r\n});\r\n\r\npm.test(\"Product stock should be updated\", () => {\r\n    pm.expect(response.stock).to.eql(40);\r\n});\r\n\r\npm.test(\"Product description should be updated\", () => {\r\n    pm.expect(response.description)\r\n        .to.eql(\"Updated product details for API testing\");\r\n});\r\n\r\npm.test(\"Response should contain valid product data\", () => {\r\n    pm.expect(response.title).to.be.a(\"string\");\r\n    pm.expect(response.price).to.be.a(\"number\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\": \"Updated QA Automation Laptop\",\r\n    \"price\": 1499.99,\r\n    \"stock\": 40,\r\n    \"description\": \"Updated product details for API testing\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products/1",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete a Product",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Deleted product ID should match requested ID\", () => {\r\n    pm.expect(response.id).to.eql(1);\r\n});\r\n\r\npm.test(\"Response should contain product details\", () => {\r\n    pm.expect(response).to.have.property(\"title\");\r\n    pm.expect(response).to.have.property(\"price\");\r\n});\r\n\r\npm.test(\"Deletion timestamp should be available\", () => {\r\n    pm.expect(response).to.have.property(\"isDeleted\", true);\r\n    pm.expect(response).to.have.property(\"deletedOn\");\r\n    pm.expect(new Date(response.deletedOn).getTime()).to.be.a(\"number\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/products/1",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "products",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

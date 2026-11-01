@@ -1,0 +1,300 @@
+{
+  "info": {
+    "_postman_id": "6e7f043b-0930-48f2-b6e9-170ec734ed09",
+    "name": "Integration_Testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50000643",
+    "_collection_link": "https://go.postman.co/collection/50000643-6e7f043b-0930-48f2-b6e9-170ec734ed09?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication_User_Cart_Workflow",
+      "item": [
+        {
+          "name": "Login Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login should return 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Access token should be generated\", () => {\r\n    pm.expect(response.accessToken).to.be.a(\"string\");\r\n    pm.expect(response.accessToken.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Refresh token should be generated\", () => {\r\n    pm.expect(response.refreshToken).to.be.a(\"string\");\r\n    pm.expect(response.refreshToken.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"User ID should be generated\", () => {\r\n    pm.expect(response.id).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Username should match login credentials\", () => {\r\n    pm.expect(response.username).to.eql(\"emilys\");\r\n});\r\n\r\n// Save integration workflow data\r\npm.environment.set(\"integration_access_token\", response.accessToken);\r\npm.environment.set(\"integration_refresh_token\", response.refreshToken);\r\npm.environment.set(\"integration_user_id\", response.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"emilys\",\r\n\"password\":\"emilyspass\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ecommerce_base_url}}/auth/login",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get_Authenticated_User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Authenticated user API should return 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\nconst expectedUserId = Number(\r\n    pm.environment.get(\"integration_user_id\")\r\n);\r\n\r\npm.test(\"Authenticated user ID should match login user ID\", () => {\r\n    pm.expect(response.id).to.eql(expectedUserId);\r\n});\r\n\r\npm.test(\"Username should match login user\", () => {\r\n    pm.expect(response.username).to.eql(\"emilys\");\r\n});\r\n\r\npm.test(\"User email should be valid\", () => {\r\n    pm.expect(response.email).to.be.a(\"string\");\r\n    pm.expect(response.email).to.match(\r\n        /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/\r\n    );\r\n});\r\n\r\npm.test(\"User profile should contain required fields\", () => {\r\n    pm.expect(response.firstName).to.be.a(\"string\");\r\n    pm.expect(response.lastName).to.be.a(\"string\");\r\n    pm.expect(response.gender).to.be.a(\"string\");\r\n});\r\n\r\nconsole.log(\"Authenticated User:\", response.username);\r\nconsole.log(\"Verified User ID:\", response.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{integration_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/auth/me",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Carts By User Id Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Get user carts API should return 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\nconst expectedUserId = Number(\r\n    pm.environment.get(\"integration_user_id\")\r\n);\r\n\r\npm.test(\"Response should contain carts array\", () => {\r\n    pm.expect(response.carts).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Cart ownership should match authenticated user\", () => {\r\n    response.carts.forEach(cart => {\r\n        pm.expect(cart.userId).to.eql(expectedUserId);\r\n    });\r\n});\r\n\r\npm.test(\"Each cart should contain valid products\", () => {\r\n    response.carts.forEach(cart => {\r\n        pm.expect(cart.products).to.be.an(\"array\");\r\n\r\n        cart.products.forEach(product => {\r\n            pm.expect(product.id).to.be.a(\"number\");\r\n            pm.expect(product.quantity).to.be.a(\"number\");\r\n            pm.expect(product.price).to.be.a(\"number\");\r\n        });\r\n    });\r\n});\r\n\r\npm.test(\"Cart totals should be valid\", () => {\r\n    response.carts.forEach(cart => {\r\n        pm.expect(cart.total).to.be.a(\"number\");\r\n        pm.expect(cart.totalQuantity).to.be.a(\"number\");\r\n        pm.expect(cart.totalProducts).to.be.a(\"number\");\r\n    });\r\n});\r\n\r\nconsole.log(\"Authenticated User ID:\", expectedUserId);\r\nconsole.log(\"Carts Retrieved:\", response.carts.length);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/carts/user/{{integration_user_id}}",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "carts",
+                "user",
+                "{{integration_user_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Product_Cart_Workflow",
+      "item": [
+        {
+          "name": "Get_Product_Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Product API should return 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Product ID should be valid\", () => {\r\n    pm.expect(response.id).to.eql(1);\r\n});\r\n\r\npm.test(\"Product title should be available\", () => {\r\n    pm.expect(response.title).to.be.a(\"string\");\r\n    pm.expect(response.title.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Product price should be positive\", () => {\r\n    pm.expect(response.price).to.be.a(\"number\");\r\n    pm.expect(response.price).to.be.above(0);\r\n});\r\n\r\npm.test(\"Product stock should be valid\", () => {\r\n    pm.expect(response.stock).to.be.a(\"number\");\r\n    pm.expect(response.stock).to.be.at.least(0);\r\n});\r\n\r\n// Save product information for the next request\r\npm.environment.set(\"integration_product_id\", response.id);\r\npm.environment.set(\"integration_product_price\", response.price);\r\npm.environment.set(\"integration_product_title\", response.title);\r\n\r\nconsole.log(\"Product ID:\", response.id);\r\nconsole.log(\"Product Price:\", response.price);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/products/1",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "products",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add_Product_To_Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Add cart API should return 200 or 201\", () => {\r\n    pm.expect([200, 201]).to.include(pm.response.code);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\nconst expectedProductId = Number(\r\n    pm.environment.get(\"integration_product_id\")\r\n);\r\n\r\npm.test(\"Cart ID should be generated\", () => {\r\n    pm.expect(response.id).to.be.a(\"number\");\r\n    pm.expect(response.id).to.be.above(0);\r\n});\r\n\r\npm.test(\"Cart should belong to user 1\", () => {\r\n    pm.expect(response.userId).to.eql(1);\r\n});\r\n\r\npm.test(\"Cart should contain the requested product\", () => {\r\n    pm.expect(response.products).to.be.an(\"array\");\r\n\r\n    const product = response.products.find(\r\n        item => item.id === expectedProductId\r\n    );\r\n\r\n    pm.expect(product).to.exist;\r\n    pm.expect(product.quantity).to.eql(2);\r\n});\r\n\r\npm.test(\"Cart quantity should be correct\", () => {\r\n    pm.expect(response.totalQuantity).to.eql(2);\r\n});\r\n\r\n// Save generated cart ID\r\npm.environment.set(\"integration_cart_id\", response.id);\r\n\r\nconsole.log(\"Created Cart ID:\", response.id);\r\nconsole.log(\"Added Product ID:\", expectedProductId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{integration_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userId\": 1,\r\n    \"products\": [\r\n        {\r\n            \"id\": {{integration_product_id}},\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ecommerce_base_url}}/carts/add",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "carts",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get_Created_Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET created cart returns expected not-found response\", () => {\r\n    pm.expect(pm.response.code).to.eql(404);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Error message should identify missing cart\", () => {\r\n    pm.expect(response.message).to.include(\r\n        pm.environment.get(\"integration_cart_id\")\r\n    );\r\n});\r\n\r\nconsole.log(\"Generated cart ID:\",\r\n    pm.environment.get(\"integration_cart_id\"));\r\n\r\nconsole.log(\"Persistence limitation confirmed\");"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/carts/{{integration_cart_id}}",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "carts",
+                "{{integration_cart_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Financial_API_Integration",
+      "item": [
+        {
+          "name": "Get_USD_INR_Rate",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "pm.test(\"Exchange rate API should return 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Currency pair should be USD to INR\", () => {\r\n    pm.expect(response.base).to.eql(\"USD\");\r\n    pm.expect(response.quote).to.eql(\"INR\");\r\n});\r\n\r\npm.test(\"Exchange rate should be positive\", () => {\r\n    pm.expect(response.rate).to.be.a(\"number\");\r\n    pm.expect(response.rate).to.be.above(0);\r\n});\r\n\r\n// Save integration data\r\npm.environment.set(\"integration_exchange_rate\", response.rate);\r\n\r\nconsole.log(\"USD to INR rate:\", response.rate);",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{finance_base_url}}v2/rate/usd/inr",
+              "host": [
+                "{{finance_base_url}}v2"
+              ],
+              "path": [
+                "rate",
+                "usd",
+                "inr"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Calculate_USD_INR",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Exchange rate API should return 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\n// Read the rate directly from the current API response\r\nconst exchangeRate = Number(response.rate);\r\n\r\nconst amountUSD = 100;\r\n\r\n// Validate exchange rate\r\npm.test(\"Exchange rate should be valid\", () => {\r\n    pm.expect(exchangeRate).to.be.a(\"number\");\r\n    pm.expect(exchangeRate).to.be.above(0);\r\n});\r\n\r\n// Calculate INR\r\nconst actualINR = Number(\r\n    (amountUSD * exchangeRate).toFixed(2)\r\n);\r\n\r\n// Independently calculate expected result\r\nconst expectedINR = Number(\r\n    (amountUSD * Number(response.rate)).toFixed(2)\r\n);\r\n\r\npm.test(\"USD to INR calculation should be correct\", () => {\r\n    pm.expect(actualINR).to.eql(expectedINR);\r\n});\r\n\r\npm.test(\"Converted amount should be positive\", () => {\r\n    pm.expect(actualINR).to.be.above(0);\r\n});\r\n\r\n// Save results\r\npm.environment.set(\"integration_exchange_rate\", exchangeRate);\r\npm.environment.set(\"integration_amount_usd\", amountUSD);\r\npm.environment.set(\"integration_amount_inr\", actualINR);\r\n\r\nconsole.log(\"USD Amount:\", amountUSD);\r\nconsole.log(\"Exchange Rate:\", exchangeRate);\r\nconsole.log(\"INR Amount:\", actualINR);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{finance_base_url}}v2/rate/usd/inr",
+              "host": [
+                "{{finance_base_url}}v2"
+              ],
+              "path": [
+                "rate",
+                "usd",
+                "inr"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

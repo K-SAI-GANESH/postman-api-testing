@@ -1,0 +1,100 @@
+{
+  "info": {
+    "_postman_id": "ec22f1ce-cf2f-4228-99ea-d26b0824eec7",
+    "name": "Performance Testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50000643",
+    "_collection_link": "https://go.postman.co/collection/50000643-ec22f1ce-cf2f-4228-99ea-d26b0824eec7?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "API_Response_Time",
+      "item": [
+        {
+          "name": "Get All Users Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\n\r\npm.test(\"Verify the default limit\", ()=>{\r\npm.expect(response_body.limit).to.be.eql(30);\r\n});\r\n\r\npm.test(\"Users should be an array\", ()=>{\r\npm.expect(response_body.users).to.be.a(\"array\");\r\n});\r\n\r\n\r\npm.test(\"Users length should not be 0 \", ()=>{\r\npm.expect(response_body.users.length).to.be.above(0);\r\n});\r\n\r\n\r\npm.test(\"Check if all the mandateory field as there\", ()=>{\r\n\r\n    response_body.users.forEach(user =>{\r\n        pm.expect(user.id).to.be.a(\"number\");\r\n        pm.expect(user.firstName).to.be.a(\"string\");\r\n        pm.expect(user.lastName).to.be.a(\"string\");\r\n        pm.expect(user.age).to.be.a(\"number\");  \r\n        pm.expect(user.gender).to.be.a(\"string\");\r\n    })\r\n});\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/users",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Products Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Verify the default limit\", ()=>{\r\npm.expect(response_body.limit).to.be.eq(30);\r\n});\r\n\r\npm.test(\"Every product should contain mandatory fields\", () => {\r\n    response_body.products.forEach(user=>{\r\n\r\n        pm.expect(user.id).to.be.a(\"number\");\r\n        pm.expect(user.title).to.be.a(\"string\");\r\n        pm.expect(user.description).to.be.a(\"string\");\r\n        pm.expect(user.category).to.be.a(\"string\");\r\n        pm.expect(user.price).to.be.a(\"number\");\r\n        pm.expect(user.discountPercentage).to.be.a(\"number\");   \r\n        pm.expect(user.rating).to.be.a(\"number\");\r\n    });\r\n\r\n});\r\n\r\npm.test(\"Verify each product has unique id\", ()=>{\r\nconst ids = response_body.products.map(p => p.id);\r\npm.expect(new Set(ids).size).to.eql(ids.length);\r\n\r\n\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/products",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Carts Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Carts should be returned as an array\", () => {\r\n    pm.expect(response.carts).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Carts should not be empty\", () => {\r\n    pm.expect(response.carts.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Pagination metadata should be available\", () => {\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n    pm.expect(response.limit).to.be.a(\"number\");\r\n    pm.expect(response.skip).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Every cart should contain required fields\", () => {\r\n    response.carts.forEach(cart => {\r\n        pm.expect(cart.id).to.be.a(\"number\");\r\n        pm.expect(cart.userId).to.be.a(\"number\");\r\n        pm.expect(cart.products).to.be.an(\"array\");\r\n        pm.expect(cart.total).to.be.a(\"number\");\r\n        pm.expect(cart.totalProducts).to.be.a(\"number\");\r\n        pm.expect(cart.totalQuantity).to.be.a(\"number\");\r\n    });\r\n});\r\n\r\npm.test(\"Cart IDs should be unique\", () => {\r\n    const cartIds = response.carts.map(cart => cart.id);\r\n    pm.expect(new Set(cartIds).size).to.eql(cartIds.length);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/carts",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "carts"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

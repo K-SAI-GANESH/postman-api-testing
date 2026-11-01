@@ -1,0 +1,172 @@
+{
+  "info": {
+    "_postman_id": "1200f3d7-d5be-46aa-81f9-3641c6c575b5",
+    "name": "User_Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50000643",
+    "_collection_link": "https://go.postman.co/collection/50000643-1200f3d7-d5be-46aa-81f9-3641c6c575b5?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Negative_Testing Get User By ID",
+      "item": [
+        {
+          "name": "Get User By ID -invalid Id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", ()=>{\r\npm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\n\r\npm.test(\"Validate the id and email is proper\",()=>{\r\n    pm.expect(response_body.message).to.be.include(\"Invalid user id \");\r\n   \r\n});\r\n\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/users/aaa",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "users",
+                "aaa"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Get All Users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\n\r\npm.test(\"Verify the default limit\", ()=>{\r\npm.expect(response_body.limit).to.be.eql(30);\r\n});\r\n\r\npm.test(\"Users should be an array\", ()=>{\r\npm.expect(response_body.users).to.be.a(\"array\");\r\n});\r\n\r\n\r\npm.test(\"Users length should not be 0 \", ()=>{\r\npm.expect(response_body.users.length).to.be.above(0);\r\n});\r\n\r\n\r\npm.test(\"Check if all the mandateory field as there\", ()=>{\r\n\r\n    response_body.users.forEach(user =>{\r\n        pm.expect(user.id).to.be.a(\"number\");\r\n        pm.expect(user.firstName).to.be.a(\"string\");\r\n        pm.expect(user.lastName).to.be.a(\"string\");\r\n        pm.expect(user.age).to.be.a(\"number\");  \r\n        pm.expect(user.gender).to.be.a(\"string\");\r\n    })\r\n});\r\n\r\n\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/users",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get User By ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\npm.response.to.have.status(200);\n});\n\npm.test(\"Verify the response time\", ()=>{\npm.expect(pm.response.responseTime).to.be.below(2000);\n});\n\nvar response_body=pm.response.json();\n\npm.test(\"Validate the id and email is proper\",()=>{\n    pm.expect(response_body.id).to.be.eq(parseInt(pm.environment.get(\"id\")));\n    pm.expect(response_body.email).to.be.eq(pm.environment.get(\"email\"));\n});\n\npm.test(\"First name should be present\", () => {\n    pm.expect(response_body.firstName).to.be.a(\"string\");\n});\n\npm.test(\"Last name should be present\", () => {\n    pm.expect(response_body.lastName).to.be.a(\"string\");\n});\n\npm.test(\"Username should be present\", () => {\n    pm.expect(response_body.username).to.be.a(\"string\");\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/users/{{id}}",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "users",
+            "{{id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Users With limit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\r\npm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify the response time\", ()=>{\r\npm.expect(pm.response.responseTime).to.be.below(2000);\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\n\r\npm.test(\"Verify the default limit\", ()=>{\r\npm.expect(response_body.limit).to.be.eql(10);\r\n});\r\n\r\npm.test(\"Users should be an array\", ()=>{\r\npm.expect(response_body.users).to.be.a(\"array\");\r\n});\r\n\r\n\r\npm.test(\"Users length should not be 0 \", ()=>{\r\npm.expect(response_body.users.length).to.be.above(0);\r\n});\r\n\r\n\r\npm.test(\"Check if all the mandateory field as there\", ()=>{\r\n\r\n    response_body.users.forEach(user =>{\r\n        pm.expect(user.id).to.be.a(\"number\");\r\n        pm.expect(user.firstName).to.be.a(\"string\");\r\n        pm.expect(user.lastName).to.be.a(\"string\");\r\n        pm.expect(user.age).to.be.a(\"number\");  \r\n        pm.expect(user.gender).to.be.a(\"string\");\r\n    })\r\n});\r\n\r\n\r\n\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/users?limit=10",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "users"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search Users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", ()=>{\npm.response.to.have.status(200);\n});\n\npm.test(\"Verify the response time\", ()=>{\npm.expect(pm.response.responseTime).to.be.below(2000);\n});\n\nvar response_body=pm.response.json();\n\npm.test(\"Verify the name is proper\", ()=>{\n    const firstNameVar = pm.environment.get(\"firstName\");\n    response_body.users.forEach(user =>{\n        pm.expect(user.firstName).to.equal(firstNameVar);\n    })\n});\n\npm.test(\"Users should be an array\", ()=>{\npm.expect(response_body.users).to.be.a(\"array\");\n});\n\npm.test(\"Users length should not be 0 \", ()=>{\npm.expect(response_body.users.length).to.be.above(0);\n});\n\npm.test(\"Check if all the mandateory field as there\", ()=>{\n    response_body.users.forEach(user =>{\n        pm.expect(user.id).to.be.a(\"number\");\n        pm.expect(user.firstName).to.be.a(\"string\");\n        pm.expect(user.lastName).to.be.a(\"string\");\n        pm.expect(user.age).to.be.a(\"number\");  \n        pm.expect(user.gender).to.be.a(\"string\");\n    });\n});\n\n\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}//users/search?q={{firstName}}",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "",
+            "users",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "{{firstName}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
