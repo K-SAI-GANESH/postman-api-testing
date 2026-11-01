@@ -1,10 +1,13 @@
+
 name: API Quality Hub - CI Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -30,6 +33,7 @@ jobs:
           command: >-
             collection run collections/Authentication.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --env-var "ecommerce_base_url=https://dummyjson.com"
             --reporters cli,junit,html
             --reporter-junit-export reports/authentication-results.xml
             --reporter-html-export reports/authentication-report.html
@@ -43,6 +47,7 @@ jobs:
           command: >-
             collection run collections/Cart_Management.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --env-var "ecommerce_base_url=https://dummyjson.com"
             --reporters cli,junit,html
             --reporter-junit-export reports/cart-results.xml
             --reporter-html-export reports/cart-report.html
@@ -56,6 +61,7 @@ jobs:
           command: >-
             collection run collections/Integration_Testing.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --env-var "ecommerce_base_url=https://dummyjson.com"
             --reporters cli,junit,html
             --reporter-junit-export reports/integration-results.xml
             --reporter-html-export reports/integration-report.html
@@ -69,6 +75,7 @@ jobs:
           command: >-
             collection run collections/Product_Management.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --env-var "ecommerce_base_url=https://dummyjson.com"
             --reporters cli,junit,html
             --reporter-junit-export reports/product-results.xml
             --reporter-html-export reports/product-report.html
@@ -82,6 +89,7 @@ jobs:
           command: >-
             collection run collections/Regression_Suite.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --env-var "ecommerce_base_url=https://dummyjson.com"
             --reporters cli,junit,html
             --reporter-junit-export reports/regression-results.xml
             --reporter-html-export reports/regression-report.html
@@ -94,3 +102,255 @@ jobs:
         with:
           command: >-
             collection run collections/User_Management.postman_collection.json
+            --environment environments/qa-public-environment.example.json
+            --env-var "ecommerce_base_url=https://dummyjson.com"
+            --reporters cli,junit,html
+            --reporter-junit-export reports/users-results.xml
+            --reporter-html-export reports/users-report.html
+            --reporter-html-omitAllHeadersAndBody
+
+      - name: Generate Consolidated HTML Report
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+          from html import escape
+          from datetime import datetime, timezone
+
+          reports_dir = Path("reports")
+          collections = [
+              ("Authentication", "authentication-results.xml"),
+              ("Cart Management", "cart-results.xml"),
+              ("Integration Testing", "integration-results.xml"),
+              ("Product Management", "product-results.xml"),
+              ("Regression Suite", "regression-results.xml"),
+              ("User Management", "users-results.xml"),
+          ]
+
+          summaries = []
+          all_cases = []
+          warnings = []
+
+          for collection_name, filename in collections:
+              xml_path = reports_dir / filename
+
+              if not xml_path.exists():
+                  warnings.append(f"Missing report: {filename}")
+                  continue
+
+              try:
+                  root = ET.parse(xml_path).getroot()
+              except (ET.ParseError, OSError) as exc:
+                  warnings.append(f"Could not read {filename}: {exc}")
+                  continue
+
+              cases = list(root.iter("testcase"))
+              total = len(cases)
+              failures = sum(1 for c in cases if c.find("failure") is not None)
+              errors = sum(1 for c in cases if c.find("error") is not None)
+              skipped = sum(1 for c in cases if c.find("skipped") is not None)
+              passed = max(total - failures - errors - skipped, 0)
+              duration = sum(float(c.attrib.get("time", 0) or 0) for c in cases)
+
+              if total == 0:
+                  total = int(root.attrib.get("tests", 0))
+                  failures = int(root.attrib.get("failures", 0))
+                  errors = int(root.attrib.get("errors", 0))
+                  skipped = int(root.attrib.get("skipped", 0))
+                  passed = max(total - failures - errors - skipped, 0)
+                  duration = float(root.attrib.get("time", 0) or 0)
+
+              summaries.append({
+                  "name": collection_name,
+                  "total": total,
+                  "passed": passed,
+                  "failures": failures,
+                  "errors": errors,
+                  "skipped": skipped,
+                  "duration": duration
+              })
+
+              for case in cases:
+                  issue = case.find("failure")
+                  status = "Failure"
+
+                  if issue is None:
+                      issue = case.find("error")
+                      status = "Error"
+
+                  if issue is None:
+                      issue = case.find("skipped")
+                      status = "Skipped"
+
+                  if issue is None:
+                      status = "Passed"
+
+                  message = ""
+                  if issue is not None:
+                      message = (
+                          issue.attrib.get("message", "")
+                          or (issue.text or "")
+                      ).strip()
+
+                  all_cases.append({
+                      "collection": collection_name,
+                      "name": case.attrib.get("name", "Unnamed test"),
+                      "status": status,
+                      "time": case.attrib.get("time", ""),
+                      "message": message
+                  })
+
+          totals = {
+              key: sum(item[key] for item in summaries)
+              for key in ("total", "passed", "failures", "errors", "skipped")
+          }
+
+          duration = sum(item["duration"] for item in summaries)
+          pass_rate = (
+              totals["passed"] / totals["total"] * 100
+              if totals["total"] else 0
+          )
+
+          summary_rows = "".join(
+              f"<tr><td>{escape(x['name'])}</td>"
+              f"<td>{x['total']}</td><td>{x['passed']}</td>"
+              f"<td>{x['failures']}</td><td>{x['errors']}</td>"
+              f"<td>{x['skipped']}</td><td>{x['duration']:.2f}s</td></tr>"
+              for x in summaries
+          )
+
+          case_rows = "".join(
+              f"<tr><td>{escape(x['collection'])}</td>"
+              f"<td>{escape(x['name'])}</td>"
+              f"<td>{escape(x['status'])}</td>"
+              f"<td>{escape(x['time'])}</td>"
+              f"<td>{escape(x['message'])}</td></tr>"
+              for x in all_cases
+          )
+
+          warning_html = ""
+          if warnings:
+              warning_html = (
+                  "<h2>Report warnings</h2><ul>"
+                  + "".join(f"<li>{escape(w)}</li>" for w in warnings)
+                  + "</ul>"
+              )
+
+          generated = datetime.now(timezone.utc).strftime(
+              "%Y-%m-%d %H:%M:%S UTC"
+          )
+
+          html = f"""<!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>API Quality Hub - Complete Report</title>
+          <style>
+          body {{font-family:Arial,sans-serif;background:#f4f6f8;
+          color:#202124;margin:0;padding:25px}}
+          main {{max-width:1200px;margin:auto}}
+          .cards {{display:grid;grid-template-columns:
+          repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:20px 0}}
+          .card,section {{background:white;padding:16px;
+          border:1px solid #ddd;border-radius:8px;margin-bottom:18px}}
+          .value {{font-size:26px;font-weight:bold;margin-top:8px}}
+          table {{width:100%;border-collapse:collapse}}
+          th,td {{padding:10px;border-bottom:1px solid #ddd;
+          text-align:left;vertical-align:top}}
+          th {{background:#edf0f3}}
+          .scroll {{overflow-x:auto}}
+          .muted {{color:#666}}
+          </style>
+          </head>
+          <body>
+          <main>
+          <h1>API Quality Hub</h1>
+          <p class="muted">Consolidated API Test Report |
+          Generated: {escape(generated)}</p>
+
+          <div class="cards">
+          <div class="card">Total Tests<div class="value">{totals['total']}</div></div>
+          <div class="card">Passed<div class="value">{totals['passed']}</div></div>
+          <div class="card">Failed<div class="value">{totals['failures']}</div></div>
+          <div class="card">Errors<div class="value">{totals['errors']}</div></div>
+          <div class="card">Skipped<div class="value">{totals['skipped']}</div></div>
+          <div class="card">Pass Rate<div class="value">{pass_rate:.1f}%</div></div>
+          </div>
+
+          <section>
+          <h2>Collection Summary</h2>
+          <div class="scroll">
+          <table>
+          <tr><th>Collection</th><th>Total</th><th>Passed</th>
+          <th>Failed</th><th>Errors</th><th>Skipped</th>
+          <th>Duration</th></tr>
+          {summary_rows or '<tr><td colspan="7">No reports found</td></tr>'}
+          </table>
+          </div>
+          <p>Total execution time: {duration:.2f} seconds</p>
+          </section>
+
+          <section>
+          {warning_html}
+          <h2>Individual Test Results</h2>
+          <div class="scroll">
+          <table>
+          <tr><th>Collection</th><th>Test Case</th><th>Status</th>
+          <th>Time (s)</th><th>Failure / Error Details</th></tr>
+          {case_rows or '<tr><td colspan="5">No test cases found</td></tr>'}
+          </table>
+          </div>
+          </section>
+          </main>
+          </body>
+          </html>"""
+
+          output = reports_dir / "API-Quality-Hub-Complete-Report.html"
+          output.write_text(html, encoding="utf-8")
+
+          print(f"Consolidated report created: {output}")
+          print(f"Collections with reports: {len(summaries)} of 6")
+          print(f"Total tests: {totals['total']}")
+          print(f"Passed: {totals['passed']}")
+          print(f"Failed: {totals['failures']}")
+          print(f"Errors: {totals['errors']}")
+          print(f"Skipped: {totals['skipped']}")
+          PY
+
+      - name: Upload API Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: API-Quality-Hub-Reports
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Check overall test result
+        if: always()
+        shell: bash
+        run: |
+          failed=0
+
+          for result in \
+            "${{ steps.authentication.outcome }}" \
+            "${{ steps.cart.outcome }}" \
+            "${{ steps.integration.outcome }}" \
+            "${{ steps.product.outcome }}" \
+            "${{ steps.regression.outcome }}" \
+            "${{ steps.users.outcome }}"
+          do
+            if [ "$result" != "success" ]; then
+              failed=1
+            fi
+          done
+
+          if [ "$failed" -eq 1 ]; then
+            echo "One or more Postman collection runs failed."
+            exit 1
+          fi
+
+          echo "All six Postman collection runs completed successfully."
