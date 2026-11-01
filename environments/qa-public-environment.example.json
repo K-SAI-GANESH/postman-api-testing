@@ -1,0 +1,142 @@
+{
+  "id": "9a744a6f-d6dd-4c43-b463-cb759f3eef9f",
+  "name": "QA -Environment",
+  "values": [
+    {
+      "key": "ecommerce_base_url",
+      "value": "https://dummyjson.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "access_token",
+      "type": "default",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "key": "refresh_token",
+      "type": "default",
+      "enabled": true,
+      "secret": true
+    },
+    {
+      "key": "id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "email",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "firstName",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "product_id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_product_id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_cart_id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "finance_base_url",
+      "value": "https://api.frankfurter.dev/",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "usd_inr_rate",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "calculated_amount",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_access_token",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_refresh_token",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_user_id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_product_id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_product_price",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_product_title",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_cart_id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_amount_usd",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_amount_inr",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "integration_exchange_rate",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "color": 300,
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-11-01T11:57:04.762Z",
+  "_postman_exported_using": "Postman/12.34.4"
+}

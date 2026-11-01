@@ -1,0 +1,37 @@
+
+name: API Quality Hub - CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api-tests:
+    name: Postman API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Authentication API Tests
+        uses: postmanlabs/postman-cli-action@v1
+        with:
+          command: >-
+            collection run
+            collections/Authentication.postman_collection.json
+            --environment environments/qa-public-environment.example.json
+
+      - name: Run Cart Management API Tests
+        uses: postmanlabs/postman-cli-action@v1
+        with:
+          command: >-
+            collection run
+            collections/Cart_Management.postman_collection.json
+            --environment environments/qa-public-environment.example.json
