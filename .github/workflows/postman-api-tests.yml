@@ -20,18 +20,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run Authentication API Tests
+      - name: Run Authentication Tests
         uses: postmanlabs/postman-cli-action@v1
         with:
           command: >-
-            collection run
-            collections/Authentication.postman_collection.json
+            collection run collections/Authentication.postman_collection.json
             --environment environments/qa-public-environment.example.json
 
-      - name: Run Cart Management API Tests
+      - name: Run Cart Management Tests
         uses: postmanlabs/postman-cli-action@v1
         with:
           command: >-
-            collection run
-            collections/Cart_Management.postman_collection.json
+            collection run collections/Cart_Management.postman_collection.json
+            --environment environments/qa-public-environment.example.json
+
+      - name: Run Integration Tests
+        uses: postmanlabs/postman-cli-action@v1
+        with:
+          command: >-
+            collection run collections/Integration_Testing.postman_collection.json
+            --environment environments/qa-public-environment.example.json
+
+      - name: Run Product Management Tests
+        uses: postmanlabs/postman-cli-action@v1
+        with:
+          command: >-
+            collection run collections/Product_Management.postman_collection.json
+            --environment environments/qa-public-environment.example.json
+
+      - name: Run Regression Tests
+        uses: postmanlabs/postman-cli-action@v1
+        with:
+          command: >-
+            collection run collections/Regression_Suite.postman_collection.json
+            --environment environments/qa-public-environment.example.json
+
+      - name: Run User Management Tests
+        uses: postmanlabs/postman-cli-action@v1
+        with:
+          command: >-
+            collection run collections/User_Management.postman_collection.json
             --environment environments/qa-public-environment.example.json
