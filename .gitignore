@@ -1,0 +1,19 @@
+# Sensitive environment files
+.env
+.env.*
+!.env.example
+
+# Local secrets and credentials
+secrets/
+*.pem
+*.key
+
+# Test reports and temporary files
+reports/
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+environments/QA -Environment.postman_environment.json

@@ -1,0 +1,386 @@
+{
+  "info": {
+    "_postman_id": "16c119a5-0f9a-41d4-b26e-c2998f399054",
+    "name": "Authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50000643",
+    "_collection_link": "https://go.postman.co/collection/50000643-16c119a5-0f9a-41d4-b26e-c2998f399054?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Negative_Testing - Login API",
+      "item": [
+        {
+          "name": "Invalid User Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Validate status code 400\",()=>{\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Validate response Time\",()=>{\r\n    pm.expect(pm.response.responseTime).to.be.below(5000);\r\n});\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Validate response property\", () => {\r\n    pm.expect(response_body).to.have.property(\"message\");\r\n    pm.expect(response_body.message).to.equal(\"Invalid credentials\");\r\n\r\n});\r\n\r\n\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"emilys\",\r\n\"password\":\"test123\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ecommerce_base_url}}/auth/login",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Empty User Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Validate status code 400\",()=>{\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Validate response Time\",()=>{\r\n    pm.expect(pm.response.responseTime).to.be.below(5000);\r\n});\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Validate response property\", () => {\r\n    pm.expect(response_body).to.have.property(\"message\");\r\n    pm.expect(response_body.message).to.equal(\"Username and password required\");\r\n\r\n});\r\n\r\n\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"\",\r\n\"password\":\"test123\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ecommerce_base_url}}/auth/login",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Empty Password Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Validate status code 400\",()=>{\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Validate response Time\",()=>{\r\n    pm.expect(pm.response.responseTime).to.be.below(5000);\r\n});\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Validate response property\", () => {\r\n    pm.expect(response_body).to.have.property(\"message\");\r\n    pm.expect(response_body.message).to.equal(\"Username and password required\");\r\n\r\n});\r\n\r\n\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"emilys\",\r\n\"password\":\"\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ecommerce_base_url}}/auth/login",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Password Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Validate status code 400\",()=>{\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Validate response Time\",()=>{\r\n    pm.expect(pm.response.responseTime).to.be.below(5000);\r\n});\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Validate response property\", () => {\r\n    pm.expect(response_body).to.have.property(\"message\");\r\n    pm.expect(response_body.message).to.equal(\"Invalid credentials\");\r\n\r\n});\r\n\r\n\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"apple\",\r\n\"password\":\"emilyspass\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ecommerce_base_url}}/auth/login",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Negative_Testing - Current user",
+      "item": [
+        {
+          "name": "Get Current User - No Auth",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 401\",  ()=>\r\n {\r\n    pm.response.to.have.status(401);\r\n\r\n});\r\n\r\npm.test(\"Response time is less than 200ms\", () =>\r\n{\r\n\r\npm.expect(pm.response.responseTime).to.be.below(5000);\r\n\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Validate response message\",()=>{\r\n    pm.expect(response_body.message).to.be.eql( \"Access Token is required\");\r\n});\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/auth/me",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User - Invalid Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 401\",  ()=>\r\n {\r\n    pm.response.to.have.status(401);\r\n\r\n});\r\n\r\npm.test(\"Response time is less than 200ms\", () =>\r\n{\r\n\r\npm.expect(pm.response.responseTime).to.be.below(5000);\r\n\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Validate response message\",()=>{\r\n    pm.expect(response_body.message).to.be.eql(\"Invalid/Expired Token!\");\r\n});\r\n\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "test",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{ecommerce_base_url}}/auth/me",
+              "host": [
+                "{{ecommerce_base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test Connection",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/test",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "test"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Validate status code 200\",()=>{\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Validate response Time\",()=>{\r\n    pm.expect(pm.response.responseTime).to.be.below(5000);\r\n});\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Validate response property\", () => {\r\n    pm.expect(response_body).to.have.property(\"accessToken\");\r\n    pm.expect(response_body).to.have.property(\"refreshToken\");   \r\n    pm.expect(response_body).to.have.property(\"id\");\r\n    pm.expect(response_body).to.have.property(\"username\");\r\n    pm.expect(response_body).to.have.property(\"email\");\r\n    pm.expect(response_body).to.have.property(\"firstName\");\r\n    pm.expect(response_body).to.have.property(\"lastName\");\r\n    pm.expect(response_body).to.have.property(\"gender\");\r\n    pm.expect(response_body).to.have.property(\"image\");\r\n\r\n\r\n\r\n\r\n});\r\n\r\n\r\n\r\n\r\npm.test(\"Validate accessToken\",()=>{\r\n    pm.expect(response_body.accessToken).to.be.a(\"string\");\r\n    pm.expect(response_body.accessToken.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Validate refreshToken\", () => {\r\n\r\npm.expect(response_body.refreshToken).to.be.a(\"string\");\r\npm.expect(response_body.refreshToken.length).to.be.above(0);\r\n\r\n});\r\n\r\npm.test(\"Validate id\", () => {\r\n    pm.expect(response_body.id).to.be.a(\"number\");\r\n});\r\n\r\nif (response_body.accessToken && response_body.refreshToken){\r\n    pm.environment.set(\"access_token\", response_body.accessToken);\r\n    pm.environment.set(\"refresh_token\", response_body.refreshToken);\r\n    pm.environment.set(\"id\",response_body.id);\r\n    pm.environment.set(\"email\",response_body.email);\r\n     pm.environment.set(\"firstName\",response_body.firstName);\r\n}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"emilys\",\r\n\"password\":\"emilyspass\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ecommerce_base_url}}/auth/login",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Current User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\",  ()=>\r\n {\r\n    pm.response.to.have.status(200);\r\n\r\n});\r\n\r\npm.test(\"Response time is less than 200ms\", () =>\r\n{\r\n\r\npm.expect(pm.response.responseTime).to.be.below(5000);\r\n\r\n});\r\n\r\nvar response_body=pm.response.json();\r\n\r\npm.test(\"Validate User id and email\",()=>{\r\n    pm.expect(response_body.id).to.be.eql(pm.environment.get(\"id\"));\r\n    pm.expect(response_body.email).to.be.eql(pm.environment.get(\"email\"));\r\n});\r\n\r\npm.test(\"Validate User name\",()=>{\r\n    pm.expect(response_body.username).to.be.a(\"string\");\r\n})\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/auth/me",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Refresh Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Refresh token API should return 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"New access token should be present\", () => {\r\n    pm.expect(response.accessToken).to.be.a(\"string\");\r\n    pm.expect(response.accessToken.length).to.be.above(0);\r\n});\r\n\r\nif (response.accessToken) {\r\n    pm.environment.set(\"access_token\", response.accessToken);\r\n}\r\n\r\nif (response.refreshToken) {\r\n    pm.environment.set(\"refresh_token\", response.refreshToken);\r\n}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"refreshToken\":\"{{refresh_token}}\",\r\n    \"expiresInMins\":30\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ecommerce_base_url}}/auth/refresh",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "auth",
+            "refresh"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "id",
+      "value": ""
+    },
+    {
+      "key": "email",
+      "value": ""
+    }
+  ]
+}
