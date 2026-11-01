@@ -13,51 +13,125 @@ permissions:
 
 jobs:
   api-tests:
-    name: Postman API Tests
+    name: Execute API Test Collections
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Create reports directory
+        run: mkdir -p reports
+
       - name: Run Authentication Tests
+        id: authentication
+        continue-on-error: true
         uses: postmanlabs/postman-cli-action@v1
         with:
           command: >-
             collection run collections/Authentication.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --reporters cli,junit,html
+            --reporter-junit-export reports/authentication-results.xml
+            --reporter-html-export reports/authentication-report.html
+            --reporter-html-omitAllHeadersAndBody
 
       - name: Run Cart Management Tests
+        id: cart
+        continue-on-error: true
         uses: postmanlabs/postman-cli-action@v1
         with:
           command: >-
             collection run collections/Cart_Management.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --reporters cli,junit,html
+            --reporter-junit-export reports/cart-results.xml
+            --reporter-html-export reports/cart-report.html
+            --reporter-html-omitAllHeadersAndBody
 
       - name: Run Integration Tests
+        id: integration
+        continue-on-error: true
         uses: postmanlabs/postman-cli-action@v1
         with:
           command: >-
             collection run collections/Integration_Testing.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --reporters cli,junit,html
+            --reporter-junit-export reports/integration-results.xml
+            --reporter-html-export reports/integration-report.html
+            --reporter-html-omitAllHeadersAndBody
 
       - name: Run Product Management Tests
+        id: product
+        continue-on-error: true
         uses: postmanlabs/postman-cli-action@v1
         with:
           command: >-
             collection run collections/Product_Management.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --reporters cli,junit,html
+            --reporter-junit-export reports/product-results.xml
+            --reporter-html-export reports/product-report.html
+            --reporter-html-omitAllHeadersAndBody
 
       - name: Run Regression Tests
+        id: regression
+        continue-on-error: true
         uses: postmanlabs/postman-cli-action@v1
         with:
           command: >-
             collection run collections/Regression_Suite.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --reporters cli,junit,html
+            --reporter-junit-export reports/regression-results.xml
+            --reporter-html-export reports/regression-report.html
+            --reporter-html-omitAllHeadersAndBody
 
       - name: Run User Management Tests
+        id: users
+        continue-on-error: true
         uses: postmanlabs/postman-cli-action@v1
         with:
           command: >-
             collection run collections/User_Management.postman_collection.json
             --environment environments/qa-public-environment.example.json
+            --reporters cli,junit,html
+            --reporter-junit-export reports/users-results.xml
+            --reporter-html-export reports/users-report.html
+            --reporter-html-omitAllHeadersAndBody
+
+      - name: Upload API Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: API-Quality-Hub-Test-Reports
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Check overall test result
+        if: always()
+        shell: bash
+        run: |
+          failed=0
+
+          for result in \
+            "${{ steps.authentication.outcome }}" \
+            "${{ steps.cart.outcome }}" \
+            "${{ steps.integration.outcome }}" \
+            "${{ steps.product.outcome }}" \
+            "${{ steps.regression.outcome }}" \
+            "${{ steps.users.outcome }}"
+          do
+            if [ "$result" != "success" ]; then
+              failed=1
+            fi
+          done
+
+          if [ "$failed" -eq 1 ]; then
+            echo "One or more API collections failed."
+            exit 1
+          fi
+
+          echo "All six API collections passed."
