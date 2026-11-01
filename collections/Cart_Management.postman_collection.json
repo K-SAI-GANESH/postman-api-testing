@@ -1,0 +1,203 @@
+{
+  "info": {
+    "_postman_id": "825dceaf-df2e-4295-b45e-4771e12c23d3",
+    "name": "Cart_Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50000643",
+    "_collection_link": "https://go.postman.co/collection/50000643-825dceaf-df2e-4295-b45e-4771e12c23d3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get All Carts",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Carts should be returned as an array\", () => {\r\n    pm.expect(response.carts).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Carts should not be empty\", () => {\r\n    pm.expect(response.carts.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Pagination metadata should be available\", () => {\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n    pm.expect(response.limit).to.be.a(\"number\");\r\n    pm.expect(response.skip).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Every cart should contain required fields\", () => {\r\n    response.carts.forEach(cart => {\r\n        pm.expect(cart.id).to.be.a(\"number\");\r\n        pm.expect(cart.userId).to.be.a(\"number\");\r\n        pm.expect(cart.products).to.be.an(\"array\");\r\n        pm.expect(cart.total).to.be.a(\"number\");\r\n        pm.expect(cart.totalProducts).to.be.a(\"number\");\r\n        pm.expect(cart.totalQuantity).to.be.a(\"number\");\r\n    });\r\n});\r\n\r\npm.test(\"Cart IDs should be unique\", () => {\r\n    const cartIds = response.carts.map(cart => cart.id);\r\n    pm.expect(new Set(cartIds).size).to.eql(cartIds.length);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/carts",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "carts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Cart By ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Cart ID should match requested ID\", () => {\r\n    pm.expect(response.id).to.eql(1);\r\n});\r\n\r\npm.test(\"Cart should contain a valid user ID\", () => {\r\n    pm.expect(response.userId).to.be.a(\"number\");\r\n    pm.expect(response.userId).to.be.above(0);\r\n});\r\n\r\npm.test(\"Cart products should be an array\", () => {\r\n    pm.expect(response.products).to.be.an(\"array\");\r\n    pm.expect(response.products.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Every cart product should have required fields\", () => {\r\n    response.products.forEach(product => {\r\n        pm.expect(product.id).to.be.a(\"number\");\r\n        pm.expect(product.title).to.be.a(\"string\");\r\n        pm.expect(product.price).to.be.a(\"number\");\r\n        pm.expect(product.quantity).to.be.a(\"number\");\r\n        pm.expect(product.total).to.be.a(\"number\");\r\n    });\r\n});\r\n\r\npm.test(\"Cart totals should be valid\", () => {\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n    pm.expect(response.totalProducts).to.be.a(\"number\");\r\n    pm.expect(response.totalQuantity).to.be.a(\"number\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/carts/1",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "carts",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Carts By User Id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Carts should be returned as an array\", () => {\r\n    pm.expect(response.carts).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Every cart should belong to user ID 1\", () => {\r\n    response.carts.forEach(cart => {\r\n        pm.expect(cart.userId).to.eql(1);\r\n    });\r\n});\r\n\r\npm.test(\"Each cart should have required fields\", () => {\r\n    response.carts.forEach(cart => {\r\n        pm.expect(cart.id).to.be.a(\"number\");\r\n        pm.expect(cart.products).to.be.an(\"array\");\r\n        pm.expect(cart.total).to.be.a(\"number\");\r\n        pm.expect(cart.totalQuantity).to.be.a(\"number\");\r\n    });\r\n});\r\n\r\npm.test(\"Pagination metadata should be available\", () => {\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n    pm.expect(response.limit).to.be.a(\"number\");\r\n    pm.expect(response.skip).to.be.a(\"number\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/carts/user/1",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "carts",
+            "user",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add a New Cart",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200 or 201\", () => {\r\n    pm.expect([200, 201]).to.include(pm.response.code);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Cart ID should be generated\", () => {\r\n    pm.expect(response.id).to.be.a(\"number\");\r\n    pm.expect(response.id).to.be.above(0);\r\n});\r\n\r\npm.test(\"User ID should match request\", () => {\r\n    pm.expect(response.userId).to.eql(1);\r\n});\r\n\r\npm.test(\"Cart should contain two product entries\", () => {\r\n    pm.expect(response.products).to.be.an(\"array\");\r\n    pm.expect(response.products.length).to.eql(2);\r\n});\r\n\r\npm.test(\"Product quantities should match request\", () => {\r\n    pm.expect(response.products[0].quantity).to.eql(2);\r\n    pm.expect(response.products[1].quantity).to.eql(3);\r\n});\r\n\r\npm.test(\"Cart totals should be valid\", () => {\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n    pm.expect(response.totalProducts).to.eql(2);\r\n    pm.expect(response.totalQuantity).to.eql(5);\r\n});\r\n\r\n// Save generated cart ID for the update request\r\npm.environment.set(\"created_cart_id\", response.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"userId\": 1,\r\n    \"products\": [\r\n        {\r\n            \"id\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"id\": 2,\r\n            \"quantity\": 3\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ecommerce_base_url}}/carts/add",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "carts",
+            "add"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Cart",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Cart ID should match requested ID\", () => {\r\n    pm.expect(response.id).to.eql(1);\r\n});\r\n\r\npm.test(\"Updated cart should contain products\", () => {\r\n    pm.expect(response.products).to.be.an(\"array\");\r\n    pm.expect(response.products.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Updated product quantities should match\", () => {\r\n    const product1 = response.products.find(p => p.id === 1);\r\n    const product2 = response.products.find(p => p.id === 2);\r\n\r\n    pm.expect(product1).to.exist;\r\n    pm.expect(product2).to.exist;\r\n\r\n    pm.expect(product1.quantity).to.eql(5);\r\n    pm.expect(product2.quantity).to.eql(2);\r\n});\r\n\r\npm.test(\"Cart totals should be valid\", () => {\r\n    pm.expect(response.total).to.be.a(\"number\");\r\n    pm.expect(response.totalProducts).to.be.a(\"number\");\r\n    pm.expect(response.totalQuantity).to.be.a(\"number\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"merge\": true,\r\n    \"products\": [\r\n        {\r\n            \"id\": 1,\r\n            \"quantity\": 5\r\n        },\r\n        {\r\n            \"id\": 2,\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ecommerce_base_url}}/carts/1",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "carts",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Cart",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code should be 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.test(\"Deleted cart ID should match requested ID\", () => {\r\n    pm.expect(response.id).to.eql(1);\r\n});\r\n\r\npm.test(\"Response should contain cart details\", () => {\r\n    pm.expect(response).to.have.property(\"products\");\r\n    pm.expect(response.products).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Cart should be marked as deleted\", () => {\r\n    pm.expect(response).to.have.property(\"isDeleted\", true);\r\n});\r\n\r\npm.test(\"Deletion timestamp should be valid\", () => {\r\n    pm.expect(response.deletedOn).to.be.a(\"string\");\r\n    pm.expect(new Date(response.deletedOn).getTime()).to.not.be.NaN;\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{ecommerce_base_url}}/carts/1",
+          "host": [
+            "{{ecommerce_base_url}}"
+          ],
+          "path": [
+            "carts",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
